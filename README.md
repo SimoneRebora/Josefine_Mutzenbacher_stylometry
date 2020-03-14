@@ -1,5 +1,5 @@
 # Josefine_Mutzenbacher_stylometry
-Scripts and corpora for authorship attribution of the novel *Josefine Mutzenbacher* (1906)\
+Scripts and corpora for authorship attribution of the novel *Josefine Mutzenbacher* (1906)
 
 The **"Josefine_Mutzenbacher_stylo.R"** file performs the stylometric analyses with the seven candidate authors.\
 The **"Josefine_Mutzenbacher_imposters.R"** file verifies attributions with the "impostors method".\
