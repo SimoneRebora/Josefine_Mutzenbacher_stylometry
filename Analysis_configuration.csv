@@ -1,0 +1,8 @@
+feature,value
+culling_percentage,0
+randomize,T
+mfw_min,50
+mfw_max,2000
+mfw_incr,50
+distances_selection,dist.delta dist.eder dist.canberra dist.wurzburg
+imposters_distance,wurzburg

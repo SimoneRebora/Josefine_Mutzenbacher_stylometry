@@ -6,24 +6,18 @@ library(tidyverse)
 library(reshape2)
 
 ### read configuration file
-config <- readLines("Analysis_configuration.txt")
-config <- config[which(!grepl("#", config))]
-config <- config[which(config != "")]
-config <- strsplit(config, " = ")
-
-config_value <- unlist(lapply(config, function(x) x[2]))
-names(config_value) <- unlist(lapply(config, function(x) x[1]))
+config <- read.csv("Analysis_configuration.csv", stringsAsFactors = F)
 
 ### define variables for the analysis
-culling_percentage <- as.numeric(config_value[which(names(config_value) == "culling_percentage")])
-randomize <- as.logical(config_value[which(names(config_value) == "randomize")])
-mfw_min <- as.numeric(config_value[which(names(config_value) == "mfw_min")])
-mfw_max <- as.numeric(config_value[which(names(config_value) == "mfw_max")])
-mfw_incr <- as.numeric(config_value[which(names(config_value) == "mfw_incr")])
+culling_percentage <- as.numeric(config$value[which(config$feature == "culling_percentage")])
+randomize <- as.logical(config$value[which(config$feature == "randomize")])
+mfw_min <- as.numeric(config$value[which(config$feature == "mfw_min")])
+mfw_max <- as.numeric(config$value[which(config$feature == "mfw_max")])
+mfw_incr <- as.numeric(config$value[which(config$feature == "mfw_incr")])
 mfw_selection <- (1:mfw_max)*mfw_incr
 mfw_selection <- mfw_selection[which(mfw_selection <= mfw_max)]
 mfw_selection <- mfw_selection[which(mfw_selection >= mfw_min)]
-distances_selection <- unlist(strsplit(config_value[which(names(config_value) == "distances_selection")], " "))
+distances_selection <- unlist(strsplit(config$value[which(config$feature == "distances_selection")], " "))
 
 ### save all methods in a grid
 methods_combination <- expand.grid(mfw_selection, distances_selection, stringsAsFactors = FALSE)

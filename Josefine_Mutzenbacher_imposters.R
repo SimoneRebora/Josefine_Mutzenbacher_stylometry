@@ -1,7 +1,11 @@
 library(stylo)
 
 # choose distance for analysis
-chosen_distance <- "wurzburg"
+### read configuration file
+config <- read.csv("Analysis_configuration.csv", stringsAsFactors = F)
+
+### define variables for the analysis
+chosen_distance <- config$value[which(config$feature == "imposters_distance")]
 
 # find document-term matrixes
 all_imposters_files <- list.files("corpus/Imposters", pattern = ".csv", full.names = T)
