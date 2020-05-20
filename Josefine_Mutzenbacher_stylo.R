@@ -1,15 +1,29 @@
 ### Josefine_Mutzenbacher_stylo
-### code for running a stylometric analysis of the novel "Josefine Mutzenbacher"
+### code for running stylometric analyses of the novel "Josefine Mutzenbacher"
 
 library(stylo)
 library(tidyverse)
 library(reshape2)
 
-### variables for the analysis
-culling_percentage <- 0
-samples_length <- 5000
-mfw_selection <- (1:40)*50 # which means from 50 to 2,000 with steps of 50 words
-distances_selection <- c("dist.delta", "dist.eder", "dist.canberra", "dist.wurzburg")
+### read configuration file
+config <- readLines("Analysis_configuration.txt")
+config <- config[which(!grepl("#", config))]
+config <- config[which(config != "")]
+config <- strsplit(config, " = ")
+
+config_value <- unlist(lapply(config, function(x) x[2]))
+names(config_value) <- unlist(lapply(config, function(x) x[1]))
+
+### define variables for the analysis
+culling_percentage <- as.numeric(config_value[which(names(config_value) == "culling_percentage")])
+randomize <- as.logical(config_value[which(names(config_value) == "randomize")])
+mfw_min <- as.numeric(config_value[which(names(config_value) == "mfw_min")])
+mfw_max <- as.numeric(config_value[which(names(config_value) == "mfw_max")])
+mfw_incr <- as.numeric(config_value[which(names(config_value) == "mfw_incr")])
+mfw_selection <- (1:mfw_max)*mfw_incr
+mfw_selection <- mfw_selection[which(mfw_selection <= mfw_max)]
+mfw_selection <- mfw_selection[which(mfw_selection >= mfw_min)]
+distances_selection <- unlist(strsplit(config_value[which(names(config_value) == "distances_selection")], " "))
 
 ### save all methods in a grid
 methods_combination <- expand.grid(mfw_selection, distances_selection, stringsAsFactors = FALSE)
@@ -19,7 +33,7 @@ author_full_attr <- list()
 author_full_attr_detailed <- list()
 simple_score <- numeric()
 
-### Main iteration starts
+### main iteration starts
 for(i in 1:dim(methods_combination)[1]){
   
   mfw_choice <- methods_combination[,1][i]
@@ -27,8 +41,14 @@ for(i in 1:dim(methods_combination)[1]){
   
   ### first part: test quality of attribution method
   
+  if(randomize){
+    my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_test_random.txt"
+  }else{
+    my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_test.txt"
+  }
+  
   my_results <- stylo(gui = F, 
-                      frequencies = "corpus/table_with_frequencies_test.txt", # texts are read from the term-document matrix
+                      frequencies = my_frequencies, # texts are read from the term-document matrix
                       corpus.lang = "German",
                       encoding = "UTF-8",
                       mfw.min = mfw_choice,
@@ -72,8 +92,14 @@ for(i in 1:dim(methods_combination)[1]){
   
   ### second part: attribution
   
+  if(randomize){
+    my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_full_random.txt"
+  }else{
+    my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_full.txt"
+  }
+  
   stylo_results <- stylo(gui = F, 
-                         frequencies = "corpus/table_with_frequencies_full.txt", # texts are read from the term-document matrix
+                         frequencies = my_frequencies, # texts are read from the term-document matrix
                          culling.min = culling_percentage,
                          culling.max = culling_percentage,
                          corpus.lang = "German",
@@ -107,7 +133,7 @@ for(i in 1:dim(methods_combination)[1]){
   
   author_full_attr[[i]] <- author_full_attr_tmp
   
-  cat("##############\n##############\n##############\n", i, "##############\n##############\n##############\n")
+  cat("##############\n##############\n##############\n", i, "of", dim(methods_combination)[1], "\n##############\n##############\n##############\n")
   
   unlink("*_EDGES.csv")
   
@@ -126,7 +152,12 @@ for(i in 1:length(josefine_results$Salten)){
 
 ### define outfile title
 datestamp <- gsub(pattern = "\\W", replacement = "", x = Sys.time())
-out_file <- paste("Stylo_results_samples", samples_length, "_culling",culling_percentage,"_date", datestamp, sep = "")
+if(randomize){
+  randomization <- "randomized"
+}else{
+  randomization <- "serial"
+}
+out_file <- paste("Stylo_results_",randomization,"_culling",culling_percentage,"_date", datestamp, sep = "")
 
 ### write csv of results
 write.csv(x = josefine_results, file = paste(out_file, ".csv", sep = ""))
@@ -152,3 +183,26 @@ for(chosen_distance in chosen_distances){
 }
 
 print("Delta analysis complete!!!")
+
+### rolling Delta (if analysis on full text)
+
+if(randomize){
+  my_frequencies <- "corpus/rolling_delta/freq_table_reference_set_random.txt"
+}else{
+  my_frequencies <- "corpus/rolling_delta/freq_table_reference_set.txt"
+}
+
+all_frequencies <- read.csv(my_frequencies, sep = " ")
+
+training_frequencies <- t(all_frequencies)
+
+test_frequencies <- read.csv("corpus/rolling_delta/freq_table_sliced_sample.txt", sep = " ")
+test_frequencies <- t(test_frequencies)
+
+classify_results <- rolling.classify(training.frequencies = training_frequencies, test.frequencies = test_frequencies, write.png.file = TRUE, classification.method = "delta", mfw=2000, distance.measure = "wurzburg")
+
+rolling_plot <- list.files(pattern = "rolling-delta")
+
+file.rename(rolling_plot, paste(out_file, "rolling_plot.png", sep = "_"))
+  
+print("Process finished!!!")
