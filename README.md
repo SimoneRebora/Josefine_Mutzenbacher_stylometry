@@ -11,15 +11,15 @@ Features for the analyses are listed in the **"Analysis_configuration.csv"** fil
 ### Available features
 
 For the **"Josefine_Mutzenbacher_stylo.R"** file:\
-*randomize*, which performs randomization of the words in the analyzed texts\
-*mfw_min*, which is the lowest number of most frequent words (MFW) for the analysis\
-*mfw_max*, which is the highest number of most frequent words (MFW) for the analysis\
-*mfw_incr*, which is the MFW increment for analyses on frequency strata\
-*culling_percentage*, which performs culling on the list of MFW (i.e. it keeps only words that are shared by a given percentage of texts)\
-*distances_selection*, which combines different stylometric distances (written in a single line, separated by spaces)
+- *randomize*, which performs randomization of the words in the analyzed texts\
+- *mfw_min*, which is the lowest number of most frequent words (MFW) for the analysis\
+- *mfw_max*, which is the highest number of most frequent words (MFW) for the analysis\
+- *mfw_incr*, which is the MFW increment for analyses on frequency strata\
+- *culling_percentage*, which performs culling on the list of MFW (i.e. it keeps only words that are shared by a given percentage of texts)\
+- *distances_selection*, which combines different stylometric distances (written in a single line, separated by spaces)
 
 For the **"Josefine_Mutzenbacher_imposters.R"** file:\
-*imposters_distance*, which chooses a stylometric distance to perform the "imposters" analysis\
+- *imposters_distance*, which chooses a stylometric distance to perform the "imposters" analysis\
 
 ## Corpora
 
