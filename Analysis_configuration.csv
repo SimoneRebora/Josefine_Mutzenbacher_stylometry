@@ -1,6 +1,6 @@
 feature,value
 culling_percentage,0
-randomize,T
+randomize,F
 mfw_min,50
 mfw_max,2000
 mfw_incr,50

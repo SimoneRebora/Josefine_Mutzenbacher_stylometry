@@ -3,14 +3,14 @@ Scripts and corpora for authorship attribution of the novel *Josefine Mutzenbach
 
 ## Scripts
 
-The **"Josefine_Mutzenbacher_stylo.R"** file performs the stylometric analyses with the seven candidate authors.\
+The **"Josefine_Mutzenbacher_candidates.R"** file performs the stylometric analyses with the seven candidate authors.\
 The **"Josefine_Mutzenbacher_imposters.R"** file verifies attributions with the "impostors method".
 
 Features for the analyses are listed in the **"Analysis_configuration.csv"** file. Please open and modify it if you want to perform different analyses.
 
 ### Available features
 
-For the **"Josefine_Mutzenbacher_stylo.R"** file:
+For the **"Josefine_Mutzenbacher_candidates.R"** file:
 - *randomize*, which performs randomization of the words in the analyzed texts
 - *mfw_min*, which is the lowest number of most frequent words (MFW) for the analysis
 - *mfw_max*, which is the highest number of most frequent words (MFW) for the analysis
