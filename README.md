@@ -30,5 +30,5 @@ Different document-term matrixes are provided for:
 - text attribution vs. method efficiency testing
 - analysis of the full text vs. analysis of the finale
 - analysis with or without word randomization
-- rolling delta analysis
+- rolling delta analysis\
 Information on texts and authors are in the **"Metadata_candidates.csv"** and **"Metadata_imposters.csv"** files. 
