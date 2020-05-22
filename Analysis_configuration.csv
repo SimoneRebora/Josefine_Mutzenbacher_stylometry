@@ -1,8 +1,9 @@
 feature,value
-culling_percentage,0
+finale,T
 randomize,F
 mfw_min,50
 mfw_max,2000
 mfw_incr,50
+culling_percentage,0
 distances_selection,dist.delta dist.eder dist.canberra dist.wurzburg
 imposters_distance,wurzburg

@@ -11,17 +11,24 @@ Features for the analyses are listed in the **"Analysis_configuration.csv"** fil
 ### Available features
 
 For the **"Josefine_Mutzenbacher_candidates.R"** file:
-- *randomize*, which performs randomization of the words in the analyzed texts
+- *finale*, which performs analyses only on the finale of the novel (i.e. the last 4420 words)
+- *randomize*, which performs randomization of words in the texts by candidates
+- *distances_selection*, which combines different stylometric distances (written in a single line, separated by spaces)
 - *mfw_min*, which is the lowest number of most frequent words (MFW) for the analysis
 - *mfw_max*, which is the highest number of most frequent words (MFW) for the analysis
 - *mfw_incr*, which is the MFW increment for analyses on frequency strata
 - *culling_percentage*, which performs culling on the list of MFW (i.e. it keeps only words that are shared by a given percentage of texts)
-- *distances_selection*, which combines different stylometric distances (written in a single line, separated by spaces)
 
 For the **"Josefine_Mutzenbacher_imposters.R"** file:
+- *finale*, which performs analyses only on the finale of the novel (i.e. the last 4420 words)
 - *imposters_distance*, which chooses a stylometric distance to perform the "imposters" analysis
 
 ## Corpora
 
 Due to copyright limitations with the work of Ernst Klein, only document-term matrixes are shared in the **"corpus"** folder.\
+Different document-term matrixes are provided for:
+- text attribution vs. method efficiency testing
+- analysis of the full text vs. analysis of the finale
+- analysis with or without word randomization
+- rolling delta analysis
 Information on texts and authors are in the **"Metadata_candidates.csv"** and **"Metadata_imposters.csv"** files. 

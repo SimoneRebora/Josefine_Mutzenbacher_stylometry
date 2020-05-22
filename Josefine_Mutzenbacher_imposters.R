@@ -5,12 +5,29 @@ library(stylo)
 config <- read.csv("Analysis_configuration.csv", stringsAsFactors = F)
 
 ### define variables for the analysis
+finale <- as.logical(config$value[which(config$feature == "finale")])
 chosen_distance <- config$value[which(config$feature == "imposters_distance")]
 
 # find document-term matrixes
-all_imposters_files <- list.files("corpus/Imposters", pattern = ".csv", full.names = T)
-# extract names of candidates
-all_candidate_names <- gsub(pattern = "corpus/Imposters/Imposters_|.csv", replacement = "", x = all_imposters_files)
+if(finale){
+  all_imposters_files <- list.files("corpus/imposters_analysis/finale", pattern = ".csv", full.names = T)
+  # extract names of candidates
+  all_candidate_names <- gsub(pattern = "corpus/imposters_analysis/finale/Imposters_|.csv", replacement = "", x = all_imposters_files)
+}else{
+  all_imposters_files <- list.files("corpus/imposters_analysis/full", pattern = ".csv", full.names = T)
+  # extract names of candidates
+  all_candidate_names <- gsub(pattern = "corpus/imposters_analysis/full/Imposters_|.csv", replacement = "", x = all_imposters_files)
+}
+
+# prepare file for results
+datestamp <- gsub(pattern = "\\W", replacement = "", x = Sys.time())
+if(finale){
+  filename <- paste("Imposters_finale_attribution_", datestamp, ".txt", sep = "")
+}else{
+  filename <- paste("Imposters_full_attribution_", datestamp, ".txt", sep = "")
+}
+
+cat("Distance: ", chosen_distance, "\tMFW: 2000\n\n", file = filename, sep = "")
 
 # run analysis for each candidate
 for(i in 1:length(all_candidate_names)){
@@ -39,8 +56,7 @@ for(i in 1:length(all_candidate_names)){
   data <- as.matrix(data) # dataframe has to be trasformed into matrix to be read by stylo
   imposters_results <- imposters(reference.set = data[-c(test_id, candidate_id),], test = data[test_id,], candidate.set = data[candidate_id,], distance = chosen_distance)
 
-  # save results
-  filename <- paste("Imposters_full_attribution_", my_candidate, ".txt", sep = "")  
-  cat(my_candidate, "probability:", imposters_results, "\nDistance:", chosen_distance, " MFW:", dim(data)[2], "\nImposters:", my_imposters, file = filename, sep = " ")
+  # save results    
+  cat(my_candidate, "probability:", imposters_results, "\n", file = filename, sep = " ", append = T)
 
 }

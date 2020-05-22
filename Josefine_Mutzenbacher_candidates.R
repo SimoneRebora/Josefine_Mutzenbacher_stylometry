@@ -9,6 +9,7 @@ library(reshape2)
 config <- read.csv("Analysis_configuration.csv", stringsAsFactors = F)
 
 ### define variables for the analysis
+finale <- as.logical(config$value[which(config$feature == "finale")])
 culling_percentage <- as.numeric(config$value[which(config$feature == "culling_percentage")])
 randomize <- as.logical(config$value[which(config$feature == "randomize")])
 mfw_min <- as.numeric(config$value[which(config$feature == "mfw_min")])
@@ -87,9 +88,17 @@ for(i in 1:dim(methods_combination)[1]){
   ### second part: attribution
   
   if(randomize){
-    my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_full_random.txt"
+    if(finale){
+      my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_finale_random.txt"
+    }else{
+      my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_full_random.txt"
+    }  
   }else{
-    my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_full.txt"
+    if(finale){
+      my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_finale.txt"
+    }else{
+      my_frequencies <- "corpus/candidates_analysis/table_with_frequencies_full.txt"
+    }
   }
   
   stylo_results <- stylo(gui = F, 
@@ -151,7 +160,12 @@ if(randomize){
 }else{
   randomization <- "serial"
 }
-out_file <- paste("Stylo_results_",randomization,"_culling",culling_percentage,"_date", datestamp, sep = "")
+if(finale){
+  full_finale <- "finale"
+}else{
+  full_finale <- "full"
+}
+out_file <- paste("Stylo_results_", full_finale, "_", randomization, "_culling", culling_percentage, "_date", datestamp, sep = "")
 
 ### write csv of results
 write.csv(x = josefine_results, file = paste(out_file, ".csv", sep = ""))
@@ -180,23 +194,24 @@ print("Delta analysis complete!!!")
 
 ### rolling Delta (if analysis on full text)
 
-if(randomize){
-  my_frequencies <- "corpus/rolling_delta/freq_table_reference_set_random.txt"
-}else{
-  my_frequencies <- "corpus/rolling_delta/freq_table_reference_set.txt"
-}
+if(!finale){
+  if(randomize){
+    my_frequencies <- "corpus/rolling_delta/freq_table_reference_set_random.txt"
+  }else{
+    my_frequencies <- "corpus/rolling_delta/freq_table_reference_set.txt"
+  }
 
-all_frequencies <- read.csv(my_frequencies, sep = " ")
+  all_frequencies <- read.csv(my_frequencies, sep = " ")
 
-training_frequencies <- t(all_frequencies)
+  training_frequencies <- t(all_frequencies)
 
-test_frequencies <- read.csv("corpus/rolling_delta/freq_table_sliced_sample.txt", sep = " ")
-test_frequencies <- t(test_frequencies)
+  test_frequencies <- read.csv("corpus/rolling_delta/freq_table_sliced_sample.txt", sep = " ")
+  test_frequencies <- t(test_frequencies)
 
-classify_results <- rolling.classify(training.frequencies = training_frequencies, test.frequencies = test_frequencies, write.png.file = TRUE, classification.method = "delta", mfw=2000, distance.measure = "wurzburg")
+  classify_results <- rolling.classify(training.frequencies = training_frequencies, test.frequencies = test_frequencies, write.png.file = TRUE, classification.method = "delta", mfw=2000, distance.measure = "wurzburg")
 
-rolling_plot <- list.files(pattern = "rolling-delta")
+  rolling_plot <- list.files(pattern = "rolling-delta")
 
-file.rename(rolling_plot, paste(out_file, "rolling_plot.png", sep = "_"))
-  
+  file.rename(rolling_plot, paste(out_file, "rolling_plot.png", sep = "_"))
+}  
 print("Process finished!!!")
