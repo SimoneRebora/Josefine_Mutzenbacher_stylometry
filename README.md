@@ -17,7 +17,7 @@ For the **"Josefine_Mutzenbacher_candidates.R"** file:
 - *mfw_min*, which is the lowest number of most frequent words (MFW) for the analysis
 - *mfw_max*, which is the highest number of most frequent words (MFW) for the analysis
 - *mfw_incr*, which is the MFW increment for analyses on frequency strata
-- *culling_percentage*, which performs culling on the list of MFW (i.e. it keeps only words that are shared by a given percentage of texts)
+- *culling_percentages* (written in a single line, separated by spaces), which perform different cullings on the list of MFW (i.e. keeping only words that are shared by a given percentage of texts)
 
 For the **"Josefine_Mutzenbacher_imposters.R"** file:
 - *finale*, which performs analyses only on the finale of the novel (i.e. the last 4420 words)

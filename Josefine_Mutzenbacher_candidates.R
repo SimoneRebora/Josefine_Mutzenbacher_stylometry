@@ -10,7 +10,7 @@ config <- read.csv("Analysis_configuration.csv", stringsAsFactors = F)
 
 ### define variables for the analysis
 finale <- as.logical(config$value[which(config$feature == "finale")])
-culling_percentage <- as.numeric(config$value[which(config$feature == "culling_percentage")])
+culling_percentages <- as.numeric(unlist(strsplit(config$value[which(config$feature == "culling_percentages")], " ")))
 randomize <- as.logical(config$value[which(config$feature == "randomize")])
 mfw_min <- as.numeric(config$value[which(config$feature == "mfw_min")])
 mfw_max <- as.numeric(config$value[which(config$feature == "mfw_max")])
@@ -21,7 +21,7 @@ mfw_selection <- mfw_selection[which(mfw_selection >= mfw_min)]
 distances_selection <- unlist(strsplit(config$value[which(config$feature == "distances_selection")], " "))
 
 ### save all methods in a grid
-methods_combination <- expand.grid(mfw_selection, distances_selection, stringsAsFactors = FALSE)
+methods_combination <- expand.grid(mfw_selection, distances_selection, culling_percentages, stringsAsFactors = FALSE)
 
 ### prepare variables to save results
 author_full_attr <- list()
@@ -33,6 +33,7 @@ for(i in 1:dim(methods_combination)[1]){
   
   mfw_choice <- methods_combination[,1][i]
   dist_choice <- methods_combination[,2][i]
+  culling_percentage <- methods_combination[,3][i]
   
   ### first part: test quality of attribution method
   
@@ -146,6 +147,7 @@ for(i in 1:dim(methods_combination)[1]){
 josefine_results <- as.data.frame(do.call(rbind, author_full_attr))
 josefine_results$MFW <- methods_combination[,1]
 josefine_results$distance <- methods_combination[,2]
+josefine_results$culling <- methods_combination[,3]
 josefine_results$simple_score <- simple_score
 
 josefine_results$attribution <- ""
@@ -165,7 +167,7 @@ if(finale){
 }else{
   full_finale <- "full"
 }
-out_file <- paste("Stylo_results_", full_finale, "_", randomization, "_culling", culling_percentage, "_date", datestamp, sep = "")
+out_file <- paste("Stylo_results_", full_finale, "_", randomization, "_date", datestamp, sep = "")
 
 ### write csv of results
 write.csv(x = josefine_results, file = paste(out_file, ".csv", sep = ""))
@@ -174,19 +176,23 @@ save.image(file = paste(out_file, ".RData", sep = ""))
 
 ### make graph for evolution of attribution with a single measure
 chosen_distances <- c("dist.delta", "dist.eder", "dist.canberra", "dist.wurzburg")
-for(chosen_distance in chosen_distances){
+for(culling_percentage in culling_percentages){
   
-  josefine_results_sel <- josefine_results[which(josefine_results$distance == chosen_distance),]
-  
-  josefine_results_sel <- melt(josefine_results_sel, measure.vars =  authors_selection)
-  
-  p1 <- ggplot(josefine_results_sel, aes(x=MFW, y=value)) + 
-    geom_line(aes(color = variable)) +
-    geom_point(aes(color = variable, shape = variable)) +
-    ggtitle(chosen_distance) +
-    scale_shape_manual(values=1:length(authors_selection))
-  
-  ggsave(p1, filename = paste(out_file, "_", chosen_distance, ".png", sep = ""), width = 16, height = 9, dpi = 300, scale = 0.7)
+  for(chosen_distance in chosen_distances){
+    
+    josefine_results_sel <- josefine_results[which(josefine_results$distance == chosen_distance & josefine_results$culling == culling_percentage),]
+    
+    josefine_results_sel <- melt(josefine_results_sel, measure.vars =  authors_selection)
+    
+    p1 <- ggplot(josefine_results_sel, aes(x=MFW, y=value)) + 
+      geom_line(aes(color = variable)) +
+      geom_point(aes(color = variable, shape = variable)) +
+      ggtitle(chosen_distance) +
+      scale_shape_manual(values=1:length(authors_selection))
+    
+    ggsave(p1, filename = paste(out_file, "_", chosen_distance, "_culling", culling_percentage, ".png", sep = ""), width = 16, height = 9, dpi = 300, scale = 0.7)
+    
+  }
   
 }
 
