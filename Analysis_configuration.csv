@@ -1,6 +1,6 @@
 feature,value
 finale,F
-randomize,F
+randomize,T
 mfw_min,50
 mfw_max,2000
 mfw_incr,50

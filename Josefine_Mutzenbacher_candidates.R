@@ -171,10 +171,29 @@ out_file <- paste("Stylo_results_", full_finale, "_", randomization, "_date", da
 
 ### write csv of results
 write.csv(x = josefine_results, file = paste(out_file, ".csv", sep = ""))
+
+### write txt for synthetic results (weighted via simple score)
+my_authors_attributions_weighted <- rep(0, length(authors_selection))
+
+for(i in 1:length(authors_selection)){
+  attributions <- josefine_results$simple_score[which(josefine_results$attribution == authors_selection[i])]
+  my_authors_attributions_weighted[i] <- sum(attributions)
+}
+  
+my_authors_attributions_weighted <- (my_authors_attributions_weighted/sum(my_authors_attributions_weighted))*100
+names(my_authors_attributions_weighted) <- authors_selection
+my_authors_attributions_weighted <- sort(my_authors_attributions_weighted, decreasing = T)
+
+for(i in 1:length(my_authors_attributions_weighted)){
+  cat(names(my_authors_attributions_weighted)[i], ": ", my_authors_attributions_weighted[i], " %\n", sep = "", append = T, file = paste(out_file, "_attributions.txt", sep = ""))
+}
+
 ### save all
 save.image(file = paste(out_file, ".RData", sep = ""))
+print("Delta analysis complete.")
 
 ### make graph for evolution of attribution with a single measure
+dir.create(paste(out_file, "plots", sep = "_"))
 chosen_distances <- c("dist.delta", "dist.eder", "dist.canberra", "dist.wurzburg")
 for(culling_percentage in culling_percentages){
   
@@ -190,13 +209,13 @@ for(culling_percentage in culling_percentages){
       ggtitle(chosen_distance) +
       scale_shape_manual(values=1:length(authors_selection))
     
-    ggsave(p1, filename = paste(out_file, "_", chosen_distance, "_culling", culling_percentage, ".png", sep = ""), width = 16, height = 9, dpi = 300, scale = 0.7)
+    ggsave(p1, filename = paste(out_file, "_plots/", chosen_distance, "_culling", culling_percentage, ".png", sep = ""), width = 16, height = 9, dpi = 300, scale = 0.7)
     
   }
   
 }
 
-print("Delta analysis complete!!!")
+print("Plots produced.")
 
 ### rolling Delta (if analysis on full text)
 
@@ -218,6 +237,7 @@ if(!finale){
 
   rolling_plot <- list.files(pattern = "rolling-delta")
 
-  file.rename(rolling_plot, paste(out_file, "rolling_plot.png", sep = "_"))
+  file.rename(rolling_plot, paste(out_file, "_plots/rolling_plot.png", sep = "_"))
 }  
-print("Process finished!!!")
+
+print("Process finished!")
