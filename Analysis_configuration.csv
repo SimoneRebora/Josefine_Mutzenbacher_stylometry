@@ -1,9 +1,9 @@
 feature,value
 finale,F
-randomize,T
+randomize,F
 mfw_min,50
 mfw_max,2000
 mfw_incr,50
 culling_percentages,0 20 50
-distances_selection,dist.delta dist.eder dist.canberra dist.wurzburg
-imposters_distance,wurzburg
+distances_selection,dist.minmaxfast dist.delta dist.eder dist.simple dist.wurzburg
+imposters_distance,dist.wurzburg
